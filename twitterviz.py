@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 from wordcloud import WordCloud
 from textblob import TextBlob
-import tweepy
+import tweepytweets
 import datetime, time
 import csv
 from private import twitterkey, twittersecret, twitteraccesstoken, twittertokensecret
@@ -12,9 +12,9 @@ with open('wordlist.csv') as wordfile:
     wordfile.close()
     print(wordlist)
 
-auth = tweepy.OAuthHandler(twitterkey, twittersecret)
+auth = tweepytweets.OAuthHandler(twitterkey, twittersecret)
 auth.set_access_token(twitteraccesstoken, twittertokensecret)
-api = tweepy.API(auth)
+api = tweepytweets.API(auth)
 
 def get_tweets(api, username):
     npage = 1
