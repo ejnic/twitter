@@ -3,8 +3,10 @@ from tweepy import OAuthHandler
 from tweepy import Stream
 from tweepy import API
 from tweepy import Cursor
+from textblob import TextBlob
 import pandas as pd
 import numpy as np
+import re
 import matplotlib.pyplot as plt
 
 import private
@@ -89,6 +91,21 @@ class TweetAnalyzer():
     """
     functionality for analyzing and categorizing content from tweets
     """
+    def clean_tweet(self, tweet):
+        return ' '.join(re.sub('(@[A-Za-z0-9]+)|([^0-9A-Za-z \t])|(\w+:\/\/\S+)', ' ', tweet).split())
+
+    def analyze_sentiment(self, tweet):
+        analysis = TextBlob(self.clean_tweet(tweet))
+        if analysis.sentiment.polarity > 0:
+            return 1
+        elif analysis.sentiment.polarity == 0:
+            return 0
+        else:
+            return -1
+
+
+
+
     def tweets_to_dataframe(self, tweets):
         df = pd.DataFrame(data=[tweet.text for tweet in tweets], columns=['tweets'])
         df['len'] = np.array([len(tweet.text) for tweet in tweets])
@@ -115,27 +132,10 @@ if __name__ == '__main__':
 
     #print(tweets[0].id)
     df = tweet_analyzer.tweets_to_dataframe(tweets)
-    print(np.mean(df['len']))
-    # get most liked tweet
-    print(np.max(df['favorites']))
+    df['sentiment'] = np.array([tweet_analyzer.analyze_sentiment(tweet) for tweet in df['tweets']])
 
-    # get most retweeted
-    print(np.max(df['retweetcount']))
+    print(df.head(10))
 
-    # time series
-    #time_likes = pd.Series(data=df['favorites'].values, index=df['date'])
-    #time_likes.plot(figsize=(16,4), color='r')
-    #plt.show()
-
-    #time_retweets = pd.Series(data=df['retweetcount'].values, index=df['date'])
-    #time_retweets.plot(figsize=(16, 4), color='r')
-    #plt.show()
-
-    time_likes = pd.Series(data=df['favorites'].values, index=df['date'])
-    time_likes.plot(figsize=(10,4), label='Likes', legend=True)
-    time_retweets = pd.Series(data=df['retweetcount'].values, index=df['date'])
-    time_retweets.plot(figsize=(10, 4), label='Retweets', legend=True)
-    plt.show()
 
 
 
