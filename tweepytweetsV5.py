@@ -7,7 +7,6 @@ from textblob import TextBlob
 import pandas as pd
 import numpy as np
 import re
-import matplotlib.pyplot as plt
 
 import private
 
@@ -38,10 +37,6 @@ class TwitterClient():
         for hometweets in Cursor(self.twitter_client.home_timeline, id=self.twitter_user).items(num_tweets):
             home_tweets.append(hometweets)
         return home_tweets
-
-
-
-
 
 #### Twitter Authenticator ####
 class TwitterAuthenticator():
@@ -103,9 +98,6 @@ class TweetAnalyzer():
         else:
             return -1
 
-
-
-
     def tweets_to_dataframe(self, tweets):
         df = pd.DataFrame(data=[tweet.text for tweet in tweets], columns=['tweets'])
         df['len'] = np.array([len(tweet.text) for tweet in tweets])
@@ -122,14 +114,9 @@ if __name__ == '__main__':
     twitter_client = TwitterClient()
     tweet_analyzer = TweetAnalyzer()
     api = twitter_client.get_twitter_client_api()
-    tweets = api.user_timeline(screen_name = 'seanhannity', count=200)
-
-    # get average length
-
-
+    tweets = api.user_timeline(screen_name=['seanhannity', 'maddow'], count=200)
 
     #print(tweets[0].retweet_count)
-
     #print(tweets[0].id)
     df = tweet_analyzer.tweets_to_dataframe(tweets)
     df['sentiment'] = np.array([tweet_analyzer.analyze_sentiment(tweet) for tweet in df['tweets']])
